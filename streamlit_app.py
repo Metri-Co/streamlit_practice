@@ -2,7 +2,16 @@ import streamlit as st
 import pandas as pd
 from google.cloud import firestore
 from google.oauth2 import service_account
+import json
 
+def load_dataset(db):
+  ref = list(db.collection(u'movies').stream());
+  ref_dict = list(map(lambda x: x.to_dict(), ref));
+  df = pd.DataFrame(ref_dict);
+
+  return df
+
+# df = load_dataset(db)
 
 
 def loadByName(name):
@@ -98,9 +107,3 @@ names_dict = list(map(lambda x: x.to_dict(), names_ref));
 names_dataframe = pd.DataFrame(names_dict);
 
 st.dataframe(names_dataframe);
-
-
-
-
-
-
