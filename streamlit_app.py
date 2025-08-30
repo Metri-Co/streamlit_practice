@@ -29,7 +29,7 @@ st.text('Done using st.cache!')
 cbox = st.sidebar.checkbox('Show all films')
 
 if cbox:
-  dataset = load_dataset(db)
+  dataset = load_dataset()
   st.dataframe(dataset)
 # sidebar: input box para busqueda por nombre y boton buscar film que ejecute la accion
 
