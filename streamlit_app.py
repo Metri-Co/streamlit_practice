@@ -4,8 +4,8 @@ from google.cloud import firestore
 from google.oauth2 import service_account
 import json
 
-@st.cache
-def load_dataset(db):
+@st.cache_data
+def load_dataset():
   ref = list(db.collection(u'movies').stream());
   ref_dict = list(map(lambda x: x.to_dict(), ref));
   df = pd.DataFrame(ref_dict);
@@ -16,8 +16,6 @@ import json
 key_dict = json.loads(st.secrets["textkey"])
 creds = service_account.Credentials.from_service_account_info(key_dict)
 db = firestore.Client(credentials=creds, project="moviesitesm")
-
-dbNames = db.collection('names')
 
 # titulo Netflix App
 st.title('Netflix App')
