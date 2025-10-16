@@ -50,7 +50,7 @@ if cbox:
   st.dataframe(dataset)
 
 # sidebar: input box para busqueda por nombre y boton buscar film que ejecute la accion
-name_input = st.sidebar.input_text('Film title:')
+name_input = st.sidebar.text_input('Film title:')
 name_btn = st.sidebar.button('Search film by name')
 
 if name_btn:
