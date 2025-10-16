@@ -25,7 +25,7 @@ def loadByName(name):
 
 def loadByDirector(name):
   movies = load_dataset()
-  movies_names = movies[movies['director'].str.contains(name)]
+  movies_names = movies[movies['director'].str.contains(name, regex=False)]
   return movies_names
 
 
@@ -70,7 +70,7 @@ select_box = st.sidebar.selectbox('Select a director name', tuple(directores))
 director_btn = st.sidebar.button('Search film by director')
 
 if director_btn:
-    results = loadByDirector(name_input);
+    results = loadByDirector(select_box);
     st.dataframe(results);
 
 # sidebar: subheader de agregar nuevo film. Parametros de input: nombre, company en un select_box,  director en un select_box, genre en un select_box, boton crear nuevo filme que ejecute la accion
