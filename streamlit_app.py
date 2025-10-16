@@ -6,11 +6,27 @@ import json
 
 @st.cache_data
 def load_dataset():
+  """
+  This function will load the dataset from the database object. Note: passing the
+  database object as an argument to this function will raise an error due to
+  unhashable object.
+  """
   ref = list(db.collection(u'movies').stream());
   ref_dict = list(map(lambda x: x.to_dict(), ref));
   df = pd.DataFrame(ref_dict);
 
   return df
+
+
+def loadByName(name):
+  movies = load_dataset()
+  movies_names = dataset[movies['name'].str.contains(name)]
+  return movies_names
+
+def get_directors():
+  df = load_dataset();
+  directors = pd.unique(df['director'])
+  return directors
 
 import json
 key_dict = json.loads(st.secrets["textkey"])
@@ -30,11 +46,21 @@ cbox = st.sidebar.checkbox('Show all films')
 
 if cbox:
   dataset = load_dataset()
+  st.subheader('All films:')
   st.dataframe(dataset)
+
 # sidebar: input box para busqueda por nombre y boton buscar film que ejecute la accion
+name_input = st.sidebar.input_text('Film title:')
+name_btn = st.sidebar.button('Search film by name')
+
+if name_btn:
+  results = loadByName(name_input);
+  st.dataframe(results);
 
 # sidebar: select_box con los directores y boton filtrar director que ejecute la accion
+directores = get_directors();
 
+select_box = st.sidebar.selectbox('Select a director name', tuple(directores))
 # sidebar: subheader de agregar nuevo film. Parametros de input: nombre, company en un select_box,  director en un select_box, genre en un select_box, boton crear nuevo filme que ejecute la accion
 
 
