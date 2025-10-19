@@ -105,7 +105,7 @@ create_new_film = st.sidebar.button('Create new film')
 
 # upload to db
 if new_film_name and new_company and new_director and new_genre and create_new_film:
-  doc_ref=db.collection('movies').document(new_film_name)
+  doc_ref=db.collection('movies').document()
   doc_ref.set(
       {
           'name':new_film_name,
