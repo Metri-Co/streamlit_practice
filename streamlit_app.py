@@ -11,7 +11,7 @@ def load_dataset():
   database object as an argument to this function will raise an error due to
   unhashable object.
   """
-  ref = list(db.collection(u'movies').stream());
+  ref = list(db.collection('movies').stream());
   ref_dict = list(map(lambda x: x.to_dict(), ref));
   df = pd.DataFrame(ref_dict);
 
