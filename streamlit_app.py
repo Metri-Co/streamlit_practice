@@ -114,7 +114,7 @@ if new_film_name and new_company and new_director and new_genre and create_new_f
           'genre':new_genre
       }
 
-  db.collection("moviees").add(new_data)
+  db.collection("movies").add(new_data)
   dataset = load_dataset()
 
   # end
