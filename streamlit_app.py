@@ -115,6 +115,7 @@ if new_film_name and new_company and new_director and new_genre and create_new_f
       }
 
   db.collection("movies").add(new_data)
+  st.cache_data.clear()
   dataset = load_dataset()
 
   # end
