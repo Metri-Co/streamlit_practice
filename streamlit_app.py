@@ -28,10 +28,20 @@ def loadByDirector(name):
   movies_names = movies[movies['director'].str.contains(name, regex=False)]
   return movies_names
 
+def loadByGenre(name):
+  movies = load_dataset()
+  movies_names = movies[movies['genre'].str.contains(name, regex=False)]
+  return movies_names
+
 
 def get_directors():
   df = load_dataset();
   directors = pd.unique(df['director'])
+  return directors
+
+def get_genres():
+  df = load_dataset();
+  directors = pd.unique(df['genre'])
   return directors
 
 import json
@@ -66,12 +76,22 @@ if name_btn:
 # sidebar: select_box con los directores y boton filtrar director que ejecute la accion
 directores = get_directors();
 
-select_box = st.sidebar.selectbox('Select a director name', tuple(directores))
-director_btn = st.sidebar.button('Search film by director')
+director_select_box = st.sidebar.selectbox('Select a director name: ', tuple(directores))
 
-if director_btn:
-    results = loadByDirector(select_box);
+if director_select_box:
+    results = loadByDirector(director_select_box);
     st.dataframe(results);
+
+
+# sidebar: select_box con los generos y filtrar al seleccionar uno
+genres = get_genres();
+
+genre_select_box = st.sidebar.selectbox('Select a genre: ', tuple(directores))
+
+if genre_select_box:
+    results = loadByDirector(genre_select_box);
+    st.dataframe(results);
+
 
 # sidebar: subheader de agregar nuevo film. Parametros de input: nombre, company en un select_box,  director en un select_box, genre en un select_box, boton crear nuevo filme que ejecute la accion
 
