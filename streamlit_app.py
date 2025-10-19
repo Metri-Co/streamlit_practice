@@ -18,36 +18,37 @@ def load_dataset():
   return df
 
 
-def loadByName(name):
-  movies = load_dataset()
+def loadByName(name, df):
+  movies = df
   movies_names = movies[movies['name'].str.contains(name)]
   return movies_names
 
-def loadByDirector(name):
-  movies = load_dataset()
+def loadByDirector(name, df):
+  movies = df
   movies_names = movies[movies['director'].str.contains(name, regex=False)]
   return movies_names
 
-def loadByGenre(name):
-  movies = load_dataset()
+def loadByGenre(name, df):
+  movies = df
   movies_names = movies[movies['genre'].str.contains(name, regex=False)]
   return movies_names
 
-
-def get_directors():
+def get_df_info():
   df = load_dataset();
-  directors = pd.unique(df['director'])
-  return directors
 
-def get_genres():
-  df = load_dataset();
-  directors = pd.unique(df['genre'])
-  return directors
+  info = {'directors':pd.unique(df['director']),
+          'genres':pd.unique(df['genre']),
+          'companies':pd.unique(df['company']),}
+
+  return info
 
 import json
 key_dict = json.loads(st.secrets["textkey"])
 creds = service_account.Credentials.from_service_account_info(key_dict)
 db = firestore.Client(credentials=creds, project="moviesitesm")
+
+info = get_df_info()
+dataset = load_dataset()
 
 # titulo Netflix App
 st.title('Netflix App')
@@ -61,7 +62,6 @@ st.text('Done using st.cache!')
 cbox = st.sidebar.checkbox('Show all films')
 
 if cbox:
-  dataset = load_dataset()
   st.subheader('All films:')
   st.dataframe(dataset)
 
@@ -70,29 +70,48 @@ name_input = st.sidebar.text_input('Film title:')
 name_btn = st.sidebar.button('Search film by name')
 
 if name_btn:
-  results = loadByName(name_input);
+  results = loadByName(name_input, dataset);
   st.dataframe(results);
 
 # sidebar: select_box con los directores y boton filtrar director que ejecute la accion
-directores = get_directors();
+director_select_box = st.sidebar.selectbox('Select a director name: ', tuple(info['directors']))
+director_btn = st.sidebar.button('Filter director')
 
-director_select_box = st.sidebar.selectbox('Select a director name: ', tuple(directores))
-
-if director_select_box:
-    results = loadByDirector(director_select_box);
+if director_btn:
+    results = loadByDirector(director_select_box, dataset);
     st.dataframe(results);
 
 
 # sidebar: select_box con los generos y filtrar al seleccionar uno
-genres = get_genres();
+genre_select_box = st.sidebar.selectbox('Select a genre: ', tuple(info['genres']))
+genre_btn = st.sidebar.button('Filter genre')
 
-genre_select_box = st.sidebar.selectbox('Select a genre: ', tuple(directores))
-
-if genre_select_box:
-    results = loadByDirector(genre_select_box);
+if genre_btn:
+    results = loadByGenre(genre_select_box, dataset);
     st.dataframe(results);
 
 
 # sidebar: subheader de agregar nuevo film. Parametros de input: nombre, company en un select_box,  director en un select_box, genre en un select_box, boton crear nuevo filme que ejecute la accion
+st.sidebar.text('New Film')
+new_film_name = st.sidebar.text_input('Name:')
 
+new_company = st.sidebar.selectbox('Company: ', tuple(info['companies']))
 
+new_director = st.sidebar.selectbox('Director: ', tuple(info['directors']))
+
+new_genre = st.sidebar.selectbox('Genre: ', tuple(info['genres']))
+
+create_new_film = st.sidebar.button('Create new film')
+
+# upload to db
+if new_film_name and new_company and new_director and new_genre and create_new_film:
+  doc_ref=db.collection('movies').document(new_film_name)
+  doc_ref.set(
+      {
+          'name':new_film_name,
+          'company':new_company,
+          'director': new_director,
+          'genre':new_genre
+      }
+  )
+  # end
