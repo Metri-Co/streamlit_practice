@@ -114,6 +114,6 @@ if new_film_name and new_company and new_director and new_genre and create_new_f
           'genre':new_genre
       }
 
-  db.collection("moviees").add(data)
+  db.collection("moviees").add(new_data)
 
   # end
