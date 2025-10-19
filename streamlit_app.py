@@ -17,7 +17,7 @@ def load_dataset():
 
   return df
 
-
+# Funciones para cargar datos por filtros
 def loadByName(name, df):
   movies = df
   movies_names = movies[movies['name'].str.contains(name)]
@@ -33,7 +33,13 @@ def loadByGenre(name, df):
   movies_names = movies[movies['genre'].str.contains(name, regex=False)]
   return movies_names
 
+ # se crea una funcion para cargar la informacion del dataset que se usara mas adelante, como los directores
+ # generos y companias. Esto permitira indexar rapidamente durante las ejecuciones de los chekcbox
 def get_df_info():
+  """
+  Function to extract the names of directors, genre, and companies
+  to store them in a dictionary for further use
+  """
   df = load_dataset();
 
   info = {'directors':pd.unique(df['director']),
@@ -42,11 +48,13 @@ def get_df_info():
 
   return info
 
+# Se inicializan las credenciales de Firestore
 import json
 key_dict = json.loads(st.secrets["textkey"])
 creds = service_account.Credentials.from_service_account_info(key_dict)
 db = firestore.Client(credentials=creds, project="moviesitesm")
 
+# Se cargan tanto la informacion como los datos
 info = get_df_info()
 dataset = load_dataset()
 
@@ -104,7 +112,8 @@ new_genre = st.sidebar.selectbox('Genre: ', tuple(info['genres']))
 
 create_new_film = st.sidebar.button('Create new film')
 
-# upload to db
+# upload to db, se debeusar st.cache_data.clear() al hacer una actualizacion de la bd, sino
+# la funcion no mostrara los nuevos registros de la coleccion
 if new_film_name and new_company and new_director and new_genre and create_new_film:
   
   new_data = {
@@ -114,8 +123,7 @@ if new_film_name and new_company and new_director and new_genre and create_new_f
           'genre':new_genre
       }
 
+  #  se insertan datos, se resetea el cache y se vuelven a cargar los datos actualizados
   db.collection("movies").add(new_data)
   st.cache_data.clear()
   dataset = load_dataset()
-
-  # end
