@@ -50,6 +50,7 @@ db = firestore.Client(credentials=creds, project="moviesitesm")
 info = get_df_info()
 dataset = load_dataset()
 
+
 # titulo Netflix App
 st.title('Netflix App')
 
@@ -105,13 +106,14 @@ create_new_film = st.sidebar.button('Create new film')
 
 # upload to db
 if new_film_name and new_company and new_director and new_genre and create_new_film:
-  doc_ref=db.collection('movies').document()
-  doc_ref.set(
-      {
+  
+  new_data = {
           'name':new_film_name,
           'company':new_company,
           'director': new_director,
           'genre':new_genre
       }
-  )
+
+  db.collection("moviees").add(data)
+
   # end
